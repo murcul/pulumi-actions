@@ -2,6 +2,7 @@
 # This is an entrypoint for our Docker image that does some minimal bootstrapping before executing.
 
 set -e
+set -x
 
 # If the PULUMI_CI variable is set, we'll do some extra things to make common tasks easier.
 if [ ! -z "$PULUMI_CI" ]; then
@@ -21,34 +22,50 @@ if [ ! -z "$PULUMI_CI" ]; then
         export PULUMI_CI_BUILD_URL=
         export PULUMI_CI_PULL_REQUEST_SHA="$GITHUB_SHA"
 
-        # For PR events, we want to take the ref of the target branch, not the current. This ensures, for
-        # instance, that a PR for a topic branch merging into `master` will use the `master` branch as the
-        # target for a preview. Note that for push events, we of course want to use the actual branch.
+        BRANCH=$(echo $GITHUB_REF | sed "s/refs\/heads\///g")
+        if [ ! -z "$PULUMI_REVIEW_STACKS" ]; then
+           PULUMI_STACK_NAME="$BRANCH-review"
+        fi
+
         if [ "$PULUMI_CI" = "pr" ]; then
             # Not all PR events warrant running a preview. Many of them pertain to changes in assignments and
             # ownership, but we only want to run the preview if the action is "opened", "edited", or "synchronize".
             PR_ACTION=$(jq -r ".action" < $GITHUB_EVENT_PATH)
+
+            # For review stacks, create / destroy dynamically
+            if [ ! -z "$PULUMI_REVIEW_STACKS" ]; then
+                if [ "$PR_ACTION" = "opened" ] || [ "$PR_ACTION" = "reopened" ]; then
+                    pulumi stack init $PULUMI_STACK_NAME
+                elif [ "$PR_ACTION" = "closed" ]; then
+                    pulumi destroy -s $PULUMI_STACK_NAME
+                    pulumi stack rm $PULUMI_STACK_NAME
+                fi
+            else
+                # Without review stacks, we want to take the ref of the target branch, not the current. This ensures, for
+                # instance, that a PR for a topic branch merging into `master` will use the `master` branch as the
+                # target for a preview. Note that for push events, we of course want to use the actual branch.
+                BRANCH=$(jq -r ".pull_request.base.ref" < $GITHUB_EVENT_PATH)
+                BRANCH=$(echo $BRANCH | sed "s/refs\/heads\///g")
+            fi
+
             if [ "$PR_ACTION" != "opened" ] && [ "$PR_ACTION" != "edited" ] && [ "$PR_ACTION" != "synchronize" ]; then
                 echo -e "PR event ($PR_ACTION) contains no changes and does not warrant a Pulumi Preview"
                 echo -e "Skipping Pulumi action altogether..."
                 exit 0
             fi
-
-            BRANCH=$(jq -r ".pull_request.base.ref" < $GITHUB_EVENT_PATH)
-        else
-            BRANCH="$GITHUB_REF"
         fi
-        BRANCH=$(echo $BRANCH | sed "s/refs\/heads\///g")
     fi
 
     # Respect the branch mappings file for stack selection. Note that this is *not* required, but if the file
     # is missing, the caller of this script will need to pass `-s <stack-name>` to specify the stack explicitly.
     if [ ! -z "$BRANCH" ]; then
-        if [ -e $ROOT/.pulumi/ci.json ]; then
-            PULUMI_STACK_NAME=$(cat $ROOT/.pulumi/ci.json | jq -r ".\"$BRANCH\"")
-        else
-            # If there's no stack mapping file, we are on master, and there's a single stack, use it.
-            PULUMI_STACK_NAME=$(pulumi stack ls | awk 'FNR == 2 {print $1}' | sed 's/\*//g')
+        if [ -z "$PULUMI_STACK_NAME" ]; then
+            if [ -e $ROOT/.pulumi/ci.json ]; then
+                PULUMI_STACK_NAME=$(cat $ROOT/.pulumi/ci.json | jq -r ".\"$BRANCH\"")
+            else
+                # If there's no stack mapping file, we are on master, and there's a single stack, use it.
+                PULUMI_STACK_NAME=$(pulumi stack ls | awk 'FNR == 2 {print $1}' | sed 's/\*//g')
+            fi
         fi
 
         if [ ! -z "$PULUMI_STACK_NAME" ] && [ "$PULUMI_STACK_NAME" != "null" ]; then
