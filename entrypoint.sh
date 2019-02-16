@@ -75,7 +75,8 @@ if [ ! -z "$GOOGLE_CREDENTIALS" ]; then
     GCLOUD_KEYFILE="$(mktemp).json"
     echo "$GOOGLE_CREDENTIALS" > $GCLOUD_KEYFILE
     gcloud auth activate-service-account --key-file=$GCLOUD_KEYFILE
-    pulumi plugin install resource gcp v0.16.7
+    pulumi plugin install resource gcp v0.16.8
+    pulumi plugin install resource kubernetes v0.20.2
 fi
 
 # Next, lazily install packages if required.
