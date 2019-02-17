@@ -100,15 +100,15 @@ if [ ! -z "$GOOGLE_CREDENTIALS" ]; then
     gcloud auth activate-service-account --key-file=$GCLOUD_KEYFILE
     pulumi plugin install resource gcp v0.16.8
     pulumi plugin install resource kubernetes v0.20.2
-    pulumi config set gcp:project $PULUMI_CONFIG_GCP_PROJECT
-    pulumi config set gcp:zone $PULUMI_CONFIG_GCP_ZONE
+    pulumi config set --plaintext gcp:project $PULUMI_CONFIG_GCP_PROJECT
+    pulumi config set --plaintext gcp:zone $PULUMI_CONFIG_GCP_ZONE
 fi
 
 # Add pulumi config vars
 for varname in ${!PULUMI_CONFIG*}
 do
     echo setting ${varname/PULUMI_CONFIG_/}=${!varname}
-    pulumi config set ${varname/PULUMI_CONFIG_/} ${!varname}
+    pulumi config set --plaintext ${varname/PULUMI_CONFIG_/} ${!varname}
 done
 
 # Next, lazily install packages if required.
