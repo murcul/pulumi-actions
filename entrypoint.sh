@@ -25,6 +25,7 @@ if [ ! -z "$PULUMI_CI" ]; then
         BRANCH=$(echo $GITHUB_REF | sed "s/refs\/heads\///g")
         if [ ! -z "$PULUMI_REVIEW_STACKS" ]; then
            PULUMI_STACK_NAME="$BRANCH-review"
+           export PULUMI_CONFIG_BUILD_TAG=$BRANCH
         fi
 
         if [ "$PULUMI_CI" = "pr" ]; then
@@ -94,6 +95,8 @@ if [ ! -z "$GOOGLE_CREDENTIALS" ]; then
     gcloud auth activate-service-account --key-file=$GCLOUD_KEYFILE
     pulumi plugin install resource gcp v0.16.8
     pulumi plugin install resource kubernetes v0.20.2
+    pulumi config set gcp:project $PULUMI_CONFIG_GCP_PROJECT
+    pulumi config set gcp:zone $PULUMI_CONFIG_GCP_ZONE
 fi
 
 # Add pulumi config vars
