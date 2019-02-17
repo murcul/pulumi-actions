@@ -4,6 +4,15 @@
 set -e
 set -x
 
+# For Google, we need to authenticate with a service principal for certain authentication operations.
+if [ ! -z "$GOOGLE_CREDENTIALS" ]; then
+    GCLOUD_KEYFILE="$(mktemp).json"
+    echo "$GOOGLE_CREDENTIALS" > $GCLOUD_KEYFILE
+    gcloud auth activate-service-account --key-file=$GCLOUD_KEYFILE
+    pulumi plugin install resource gcp v0.16.8
+    pulumi plugin install resource kubernetes v0.20.2
+fi
+
 # If the PULUMI_CI variable is set, we'll do some extra things to make common tasks easier.
 if [ ! -z "$PULUMI_CI" ]; then
     # Capture the PWD before we go and potentially change it.
@@ -13,6 +22,7 @@ if [ ! -z "$PULUMI_CI" ]; then
     if [ ! -z "$PULUMI_ROOT" ]; then
         cd $PULUMI_ROOT
     fi
+
 
     # Detect the CI system and configure variables so that we get good Pulumi workflow and GitHub App support.
     if [ ! -z "$GITHUB_WORKFLOW" ]; then
@@ -93,13 +103,7 @@ if [ ! -z "$PULUMI_CI" ]; then
     fi
 fi
 
-# For Google, we need to authenticate with a service principal for certain authentication operations.
 if [ ! -z "$GOOGLE_CREDENTIALS" ]; then
-    GCLOUD_KEYFILE="$(mktemp).json"
-    echo "$GOOGLE_CREDENTIALS" > $GCLOUD_KEYFILE
-    gcloud auth activate-service-account --key-file=$GCLOUD_KEYFILE
-    pulumi plugin install resource gcp v0.16.8
-    pulumi plugin install resource kubernetes v0.20.2
     pulumi config set --plaintext gcp:project $PULUMI_CONFIG_GCP_PROJECT
     pulumi config set --plaintext gcp:zone $PULUMI_CONFIG_GCP_ZONE
 fi
