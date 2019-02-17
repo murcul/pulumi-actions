@@ -70,9 +70,10 @@ if [ ! -z "$PULUMI_CI" ]; then
         fi
 
         if [ ! -z "$PULUMI_STACK_NAME" ] && [ "$PULUMI_STACK_NAME" != "null" ]; then
-            if [ ! -z "$PULUMI_REVIEW_STACKS" ]; then
+            pulumi stack ls | grep -q $PULUMI_STACK_NAME &> /dev/null
+            if [ ! -z "$PULUMI_REVIEW_STACKS" ] && if [ ! -z "$PULUMI_REVIEW_STACKS" ] && [ $? != 0 ]; then
                 # Auto create stack if dynamic review stacks are set 
-                pulumi stack ls | grep -q $PULUMI_STACK_NAME && pulumi stack init $PULUMI_STACK_NAME
+                pulumi stack init $PULUMI_STACK_NAME
             fi
             pulumi stack select $PULUMI_STACK_NAME
         else
