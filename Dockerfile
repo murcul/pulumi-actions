@@ -55,8 +55,7 @@ RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key
         tee -a /etc/apt/sources.list.d/kubernetes.list && \
     apt-get update -y && apt-get install -y kubectl
 
-
-RUN https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
+RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
 RUN pulumi plugin install resource gcp v0.16.8
 RUN pulumi plugin install resource kubernetes v0.20.2
 
