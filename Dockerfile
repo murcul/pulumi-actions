@@ -56,6 +56,7 @@ RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key
     apt-get update -y && apt-get install -y kubectl
 
 
+RUN sudo snap install helm --classic
 RUN pulumi plugin install resource gcp v0.16.8
 RUN pulumi plugin install resource kubernetes v0.20.2
 
