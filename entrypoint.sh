@@ -47,8 +47,8 @@ if [ ! -z "$PULUMI_CI" ]; then
                 if [ "$PR_ACTION" = "opened" ] || [ "$PR_ACTION" = "reopened" ]; then
                     pulumi stack init $PULUMI_STACK_NAME
                 elif [ "$PR_ACTION" = "closed" ]; then
-                    pulumi destroy -s $PULUMI_STACK_NAME
-                    pulumi stack rm $PULUMI_STACK_NAME
+                    pulumi --non-interactive destroy -s $PULUMI_STACK_NAME
+                    pulumi --non-interactive stack rm $PULUMI_STACK_NAME
                 fi
             else
                 # Without review stacks, we want to take the ref of the target branch, not the current. This ensures, for
