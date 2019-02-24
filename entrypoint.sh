@@ -9,6 +9,7 @@ if [ ! -z "$GOOGLE_CREDENTIALS" ]; then
     GCLOUD_KEYFILE="$(mktemp).json"
     echo "$GOOGLE_CREDENTIALS" > $GCLOUD_KEYFILE
     gcloud auth activate-service-account --key-file=$GCLOUD_KEYFILE
+    helm init --client-only
 fi
 
 # If the PULUMI_CI variable is set, we'll do some extra things to make common tasks easier.
