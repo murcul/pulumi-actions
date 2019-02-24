@@ -34,6 +34,7 @@ if [ ! -z "$PULUMI_CI" ]; then
         if [ ! -z "$PULUMI_REVIEW_STACKS" ]; then
            PULUMI_STACK_NAME="$BRANCH-review"
            export PULUMI_CONFIG_BUILD_TAG=$BRANCH
+           export PULUMI_CONFIG_BUILD_SHA=$GITHUB_SHA
         fi
 
         if [ "$PULUMI_CI" = "pr" ]; then
