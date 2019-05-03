@@ -15,7 +15,7 @@ RUN apt-get update -y
 RUN apt-get install -y ca-certificates curl software-properties-common gnupg jq git
 
 # Install the Pulumi SDK, including the CLI and language runtimes.
-RUN curl -fsSL https://get.pulumi.com/ | bash -s -- --version 0.16.14 && \
+RUN curl -fsSL https://get.pulumi.com/ | bash -s -- --version 0.17.9 && \
     mv ~/.pulumi/bin/* /usr/bin
 
 # Install the necessary runtimes to support Pulumi languages.
@@ -56,8 +56,9 @@ RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key
     apt-get update -y && apt-get install -y kubectl
 
 RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
-RUN pulumi plugin install resource gcp v0.16.8
-RUN pulumi plugin install resource kubernetes v0.20.2
+RUN pulumi plugin install resource gcp v0.18.5
+RUN pulumi plugin install resource kubernetes v0.23.0
+RUN pulumi plugin install resource docker v0.17.0
 
 # Copy the entrypoint script.
 COPY ./entrypoint.sh /usr/bin/pulumi-action
