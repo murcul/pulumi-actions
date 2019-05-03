@@ -31,10 +31,17 @@ if [ ! -z "$PULUMI_CI" ]; then
         export PULUMI_CI_PULL_REQUEST_SHA="$GITHUB_SHA"
 
         BRANCH=$(echo $GITHUB_REF | sed "s/refs\/heads\///g")
-        if [ ! -z "$PULUMI_REVIEW_STACKS" ]; then
-           PULUMI_STACK_NAME="$BRANCH-review"
-           export PULUMI_CONFIG_BUILD_TAG=$BRANCH
-           export PULUMI_CONFIG_BUILD_SHA=$GITHUB_SHA
+        if [ -e $ROOT/.pulumi/ci.json ]; then
+            CI_STACK_NAME=$(cat $ROOT/.pulumi/ci.json | jq -r ".\"$BRANCH\"")
+            unset PULUMI_REVIEW_STACKS
+        fi
+        if [ ! -z "$CI_STACK_NAME" ] && [ "$CI_STACK_NAME" != "null" ]; then
+            PULUMI_STACK_NAME="$CI_STACK_NAME"
+            IS_CI_STACK=1
+        fi
+
+        if [ ! -z "$PULUMI_REVIEW_STACKS" ] && [ -z "$PULUMI_STACK_NAME" ]; then
+            PULUMI_STACK_NAME="$BRANCH-review"
         fi
 
         if [ "$PULUMI_CI" = "pr" ]; then
@@ -63,6 +70,8 @@ if [ ! -z "$PULUMI_CI" ]; then
                 echo -e "Skipping Pulumi action altogether..."
                 exit 0
             fi
+            export PULUMI_CONFIG_BUILD_TAG=$BRANCH
+            export PULUMI_CONFIG_BUILD_SHA=$GITHUB_SHA
         fi
     fi
 
