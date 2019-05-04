@@ -37,6 +37,10 @@ if [ ! -z "$PULUMI_CI" ]; then
         fi
         if [ ! -z "$CI_STACK_NAME" ] && [ "$CI_STACK_NAME" != "null" ]; then
             PULUMI_STACK_NAME="$CI_STACK_NAME"
+<<<<<<< HEAD
+=======
+            IS_CI_STACK=1
+>>>>>>> 583e8982e9eb9b76b36cd32b17393e2cf08d9067
         fi
 
         if [ ! -z "$PULUMI_REVIEW_STACKS" ] && [ -z "$PULUMI_STACK_NAME" ]; then
@@ -69,6 +73,8 @@ if [ ! -z "$PULUMI_CI" ]; then
                 echo -e "Skipping Pulumi action altogether..."
                 exit 0
             fi
+            export PULUMI_CONFIG_BUILD_TAG=$BRANCH
+            export PULUMI_CONFIG_BUILD_SHA=$GITHUB_SHA
         fi
         export PULUMI_CONFIG_BUILD_TAG=$BRANCH
         export PULUMI_CONFIG_BUILD_SHA=$GITHUB_SHA
