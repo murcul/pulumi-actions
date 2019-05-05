@@ -39,7 +39,7 @@ if [ ! -z "$PULUMI_CI" ]; then
             PULUMI_STACK_NAME="$CI_STACK_NAME"
         else
             if [ ! -z "$PULUMI_REVIEW_STACKS" ]; then
-                PULUMI_STACK_NAME="$branch-review"
+                PULUMI_STACK_NAME="$BRANCH-review"
             else
                 unset PULUMI_REVIEW_STACKS
             fi
