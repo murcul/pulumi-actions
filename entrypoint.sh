@@ -33,14 +33,16 @@ if [ ! -z "$PULUMI_CI" ]; then
         BRANCH=$(echo $GITHUB_REF | sed "s/refs\/heads\///g")
         if [ -e $ROOT/.pulumi/ci.json ]; then
             CI_STACK_NAME=$(cat $ROOT/.pulumi/ci.json | jq -r ".\"$BRANCH\"")
-            unset PULUMI_REVIEW_STACKS
-        fi
-        if [ ! -z "$CI_STACK_NAME" ] && [ "$CI_STACK_NAME" != "null" ]; then
-            PULUMI_STACK_NAME="$CI_STACK_NAME"
         fi
 
-        if [ ! -z "$PULUMI_REVIEW_STACKS" ] && [ -z "$PULUMI_STACK_NAME" ]; then
-            PULUMI_STACK_NAME="$BRANCH-review"
+        if [ ! -z "$CI_STACK_NAME" ] && [ "$CI_STACK_NAME" != "null" ]; then
+            PULUMI_STACK_NAME="$CI_STACK_NAME"
+        else
+            if [ ! -z "$PULUMI_REVIEW_STACKS" ] then
+                PULUMI_STACK_NAME="$branch-review"
+            else
+                unset PULUMI_REVIEW_STACKS
+            fi
         fi
 
         if [ "$PULUMI_CI" = "pr" ]; then
