@@ -37,12 +37,9 @@ if [ ! -z "$PULUMI_CI" ]; then
 
         if [ ! -z "$CI_STACK_NAME" ] && [ "$CI_STACK_NAME" != "null" ]; then
             PULUMI_STACK_NAME="$CI_STACK_NAME"
-        else
-            if [ ! -z "$PULUMI_REVIEW_STACKS" ]; then
-                PULUMI_STACK_NAME="$BRANCH-review"
-            else
-                unset PULUMI_REVIEW_STACKS
-            fi
+            unset PULUMI_REVIEW_STACKS
+        elif [ ! -z "$PULUMI_REVIEW_STACKS" ]; then
+            PULUMI_STACK_NAME="$BRANCH-review"
         fi
 
         if [ "$PULUMI_CI" = "pr" ]; then
