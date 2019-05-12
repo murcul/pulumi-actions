@@ -55,7 +55,7 @@ if [ ! -z "$PULUMI_CI" ]; then
                     pulumi --non-interactive destroy -s $PULUMI_STACK_NAME
                     pulumi --non-interactive stack rm --yes $PULUMI_STACK_NAME
                 fi
-            else
+            elif [ -z "$PULUMI_STACK_NAME" ]; then
                 # Without review stacks, we want to take the ref of the target branch, not the current. This ensures, for
                 # instance, that a PR for a topic branch merging into `master` will use the `master` branch as the
                 # target for a preview. Note that for push events, we of course want to use the actual branch.
