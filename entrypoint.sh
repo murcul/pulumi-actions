@@ -91,8 +91,10 @@ if [ ! -z "$PULUMI_CI" ]; then
             pulumi stack ls | grep -q $PULUMI_STACK_NAME &> /dev/null
             if [ ! -z "$PULUMI_REVIEW_STACKS" ] && [ $? != 0 ]; then
                 # Auto create stack if dynamic review stacks are set 
+                echo -e "Creating Pulumi Stack ($PULUMI_STACK_NAME)"
                 pulumi stack init $PULUMI_STACK_NAME
             fi
+            echo -e "Selecting Pulumi Stack ($PULUMI_STACK_NAME)"
             pulumi stack select $PULUMI_STACK_NAME
         else
             echo -e "No stack configured for branch '$BRANCH'"
@@ -112,6 +114,7 @@ if [ ! -z "$PULUMI_CI" ]; then
 fi
 
 if [ ! -z "$GOOGLE_CREDENTIALS" ]; then
+    echo -e "Found Google Credentials. Setting ...."
     pulumi config set --plaintext gcp:project $PULUMI_CONFIG_GCP_PROJECT
     pulumi config set --plaintext gcp:zone $PULUMI_CONFIG_GCP_ZONE
 fi
@@ -125,6 +128,7 @@ done
 
 # Next, lazily install packages if required.
 if [ -e package.json ] && [ ! -d node_modules ]; then
+    echo -e "Installing NPM packages...."
     npm install
 fi
 
