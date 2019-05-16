@@ -132,6 +132,7 @@ if [ -e package.json ] && [ ! -d node_modules ]; then
     npm install
 fi
 
+echo -e "Running Pulumi CLI (pulumi --non-interactive $*) ...."
 # Now just pass along all arguments to the Pulumi CLI.
 OUTPUT=$(sh -c "pulumi --non-interactive $*" 2>&1)
 EXIT_CODE=$?
