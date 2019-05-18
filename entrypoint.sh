@@ -113,6 +113,12 @@ if [ ! -z "$GOOGLE_CREDENTIALS" ]; then
     pulumi config set --plaintext gcp:zone $PULUMI_CONFIG_GCP_ZONE
 fi
 
+if [ ! -z "$PULUMI_CONFIG_CLOUDFLARE_KEY" ]; then
+    echo -e "Found Cloudflare credentials. Setting ...."
+    pulumi config set --plaintext cloudflare:email $PULUMI_CONFIG_CLOUDFLARE_EMAIL
+    pulumi config set --plaintext cloudflare:key $PULUMI_CONFIG_CLOUDFLARE_KEY
+fi
+
 # Add pulumi config vars
 for varname in ${!PULUMI_CONFIG*}
 do

@@ -59,6 +59,7 @@ RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash
 RUN pulumi plugin install resource gcp v0.18.5
 RUN pulumi plugin install resource kubernetes v0.23.0
 RUN pulumi plugin install resource docker v0.17.0
+RUN pulumi plugin install resource cloudflare v0.17.2
 
 # Copy the entrypoint script.
 COPY ./entrypoint.sh /usr/bin/pulumi-action
