@@ -119,6 +119,12 @@ if [ ! -z "$PULUMI_CONFIG_CLOUDFLARE_KEY" ]; then
     pulumi config set --plaintext cloudflare:token $PULUMI_CONFIG_CLOUDFLARE_KEY
 fi
 
+if [ ! -z "$PULUMI_CONFIG_KUBECONFIG" ]; then
+    echo -e "Found kubernetes credentials. Setting ...."
+    pulumi config set --plaintext kubernetes:kubeconfig $PULUMI_CONFIG_KUBECONFIG
+fi
+
+
 # Add pulumi config vars
 for varname in ${!PULUMI_CONFIG*}
 do
