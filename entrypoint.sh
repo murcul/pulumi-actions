@@ -63,7 +63,7 @@ if [ ! -z "$PULUMI_CI" ]; then
                 BRANCH=$(echo $BRANCH | sed "s/refs\/heads\///g")
             fi
 
-            if [ "$PR_ACTION" != "opened" ] && [ "$PR_ACTION" != "edited" ] && [ "$PR_ACTION" != "synchronize" ]; then
+            if [ "$PR_ACTION" != "opened" ] && [ "$PR_ACTION" != "edited" ] && [ "$PR_ACTION" != "synchronize" ] && [ "$PR_ACTION" != "reopened" ]; then
                 echo -e "PR event ($PR_ACTION) contains no changes and does not warrant a Pulumi Preview"
                 echo -e "Skipping Pulumi action altogether..."
                 exit 0
