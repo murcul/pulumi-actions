@@ -121,7 +121,7 @@ fi
 
 if [ ! -z "$PULUMI_CONFIG_KUBECONFIG" ]; then
     echo -e "Found kubernetes credentials. Setting ...."
-    pulumi config set --plaintext kubernetes:kubeconfig "$PULUMI_CONFIG_KUBECONFIG"
+    pulumi config set --plaintext kubernetes:kubeconfig < echo $PULUMI_CONFIG_KUBECONFIG
 fi
 
 
